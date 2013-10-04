@@ -197,7 +197,7 @@ def site():
 
     class IS_VALID_APPNAME(object):
         def __call__(self, value):
-            if not re.compile('\w+').match(value):
+            if not re.compile('^\w+$').match(value):
                 return (value, T('Invalid application name'))
             if not request.vars.overwrite and \
                     os.path.exists(os.path.join(apath(r=request), value)):
@@ -494,6 +494,7 @@ def enable():
     if is_gae:
         return SPAN(T('Not supported'), _style='color:yellow')
     elif os.path.exists(filename):
+        os.unlink(filename)
         return SPAN(T('Disable'), _style='color:green')
     else:
         safe_open(filename, 'wb').write('disabled: True\ntime-disabled: %s' % request.now)
@@ -562,14 +563,14 @@ def edit():
     # Load json only if it is ajax edited...
     app = get_app(request.vars.app)
     app_path = apath(app, r=request)
-    editor_defaults={'theme':'web2py'}
+    editor_defaults={'theme':'web2py', 'editor': 'default'}
     config = Config(os.path.join(request.folder, 'settings.cfg'),
                     section='editor', default_values=editor_defaults)
     preferences = config.read()
 
     if not(request.ajax):
         # return the scaffolding, the rest will be through ajax requests
-        response.title = T('Editing %s' % app)
+        response.title = T('Editing %s') % app
         editarea_preferences = {}
         editarea_preferences['FONT_SIZE'] = '10'
         editarea_preferences['FULL_SCREEN'] = 'false'
@@ -588,7 +589,7 @@ def edit():
                 response.headers["web2py-component-flash"] = T('Preferences saved correctly')
             else:
                 response.headers["web2py-component-flash"] = T('Preferences saved on session only')
-            response.headers["web2py-component-command"] = "update_theme('%s'); jQuery('a[href=#editor_settings] button.close').click();" % config.read()['theme']
+            response.headers["web2py-component-command"] = "update_theme('%s');update_editor('%s');jQuery('a[href=#editor_settings] button.close').click();" % (config.read()['theme'], config.read()['editor'])
             return
         else:
             details = {'filename':'settings', 'id':'editor_settings', 'force': False}
@@ -604,7 +605,7 @@ def edit():
         path = abspath(filename)
     else:
         path = apath(filename, r=request)
-     # Try to discover the file type
+    # Try to discover the file type
     if filename[-3:] == '.py':
         filetype = 'python'
     elif filename[-5:] == '.html':
@@ -700,7 +701,6 @@ def edit():
                                  offset and ' ' +
                                  T('at char %s', offset) or '',
                                  PRE(str(e)))
-
     if data_or_revert and request.args[1] == 'modules':
         # Lets try to reload the modules
         try:

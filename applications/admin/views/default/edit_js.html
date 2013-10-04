@@ -55,8 +55,7 @@
         tabMode: "shift",
         lineWrapping: true,
         gutters: ["CodeMirror-linenumbers", "breakpoints"],
-        {{if TEXT_EDITOR_KEYBINDING == 'emacs':}}keyMap: "emacs",{{pass}}
-        {{if TEXT_EDITOR_KEYBINDING == 'vi':}}keyMap: "vim",{{pass}}
+        keyMap: current_editor,
         matchBrackets: true,
         autofocus: false,
         height: "350px",
@@ -84,37 +83,32 @@
         CodeMirror.defaults.extraKeys["Ctrl-S"] =
             function(instance) {
                 doClickSave();};
-        CodeMirror.defaults.extraKeys["Ctrl-F11"]=
-            function(instance) {
-                setFullScreen(instance, !isFullScreen(instance));};
         CodeMirror.defaults.extraKeys["Tab"] = "indentMore";
-        CodeMirror.defaults.extraKeys["Esc"]=
-            function(instance) {
-                if (isFullScreen(instance)) {
-                    setFullScreen(instance, false);};}
+        CodeMirror.defaults.extraKeys["Ctrl-F11"] = function(cm) {
+            cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+        },
+        CodeMirror.defaults.extraKeys["Shift-Esc"] = function(cm) {
+            if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+        }
         {{pass}}
         {{if filetype=='python':}}
             // must be here or break emmet/zencoding for python
             CodeMirror.defaults.extraKeys["Ctrl-S"] =
                 function(instance) {
                     doClickSave();};
-            CodeMirror.defaults.extraKeys["Ctrl-Space"] =
-                    "autocomplete";
-			//__qdoop__		
-			CodeMirror.defaults.extraKeys["`"] =
-                    "autocomplete";
-            CodeMirror.defaults.extraKeys["Ctrl-F11"]=
-                function(instance) {
-                    setFullScreen(instance, !isFullScreen(instance));};
+            CodeMirror.defaults.extraKeys["Ctrl-Space"] = "autocomplete";
+			CodeMirror.defaults.extraKeys["`"] = "autocomplete"; //__qdoop__
             CodeMirror.defaults.extraKeys["Tab"] = "indentMore";
-            CodeMirror.defaults.extraKeys["Esc"]=
-                function(instance) {
-                    if (isFullScreen(instance)) {
-                        setFullScreen(instance, false);};}
-        //for autocomplete
-        CodeMirror.commands.autocomplete = function(cm) {
-        CodeMirror.showHint(cm, CodeMirror.pythonHint);
-      }
+            CodeMirror.defaults.extraKeys["Ctrl-F11"] = function(cm) {
+		        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+		    },
+		    CodeMirror.defaults.extraKeys["Shift-Esc"] = function(cm) {
+		        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+		    }
+            //for autocomplete
+            CodeMirror.commands.autocomplete = function(cm) {
+                CodeMirror.showHint(cm, CodeMirror.pythonHint);
+            }
         {{pass}}
     store_changes_function = function(instance, changeObj) {
         jQuery(instance).data('saved', false);
@@ -148,6 +142,7 @@
         <ul class="keybindings unstyled">
             {{=shortcut('Ctrl+S', T('Save via Ajax'))}}
             {{=shortcut('Ctrl+F11', T('Toggle Fullscreen'))}}
+			{{=shortcut('Shift+Esc', T('Exit Fullscreen'))}}
             {{=shortcut('Ctrl-F / Cmd-F', T('Start searching'))}}
             {{=shortcut('Ctrl-G / Cmd-G', T('Find Next'))}}
             {{=shortcut('Shift-Ctrl-G / Shift-Cmd-G', T('Find Previous'))}}
@@ -160,6 +155,7 @@
         <ul class="keybindings unstyled">
             {{=shortcut('Ctrl+S', T('Save via Ajax'))}}
             {{=shortcut('Ctrl+F11', T('Toggle Fullscreen'))}}
+			{{=shortcut('Shift+Esc', T('Exit Fullscreen'))}}
             {{if filetype=='python':}}
             {{=shortcut('Ctrl-Space', T('Autocomplete Python Code'))}}
            {{pass}}

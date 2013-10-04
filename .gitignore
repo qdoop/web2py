@@ -1,3 +1,6 @@
+
+
+
 .*
 *.pyc
 *.pyo
@@ -43,6 +46,11 @@ applications/*
 !applications/examples/*
 !applications/admin
 !applications/admin/*
+
+applications/*/.hg
+applications/*/.hgignore
+applications/*/progress.log
+
 applications/*/databases/*
 applications/*/sessions/*
 applications/*/errors/*

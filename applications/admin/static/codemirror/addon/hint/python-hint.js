@@ -21,6 +21,8 @@
     var cur = editor.getCursor(), token = getToken(editor, cur), tprop = token;
     // If it's not a 'word-style' token, ignore the token.
 
+	console.log('\r\nstring="'+token.string+'"| type='+token.type+'| state='+token.state.dedent+','+token.state.lastToken);
+	
     if (!/^[\w$_]*$/.test(token.string)) {
         token = tprop = {start: cur.ch, end: cur.ch, string: "", state: token.state,
                          className: token.string == ":" ? "python-type" : null};
@@ -88,6 +90,10 @@
         base = base[context.pop().string];
       if (base != null) gatherCompletions(base);
     }
+	
+	found.push('zzzzx0');
+	found.push('zzzzx1');
+	
     return found;
   }
 })();

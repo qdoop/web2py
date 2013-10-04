@@ -100,6 +100,9 @@
                     doClickSave();};
             CodeMirror.defaults.extraKeys["Ctrl-Space"] =
                     "autocomplete";
+			//__evts__		
+			CodeMirror.defaults.extraKeys["`"] =
+                    "autocomplete";
             CodeMirror.defaults.extraKeys["Ctrl-F11"]=
                 function(instance) {
                     setFullScreen(instance, !isFullScreen(instance));};
